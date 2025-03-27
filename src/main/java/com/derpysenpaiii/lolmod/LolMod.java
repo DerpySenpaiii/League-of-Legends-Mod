@@ -2,6 +2,8 @@ package com.derpysenpaiii.lolmod;
 
 import com.derpysenpaiii.lolmod.item.ModItems;
 import com.derpysenpaiii.lolmod.item.custom.RubyCrystal;
+import com.derpysenpaiii.lolmod.misc.ModAttachments;
+import com.derpysenpaiii.lolmod.networking.ModNetwork;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.neoforged.fml.InterModComms;
@@ -40,6 +42,7 @@ public class LolMod
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(ModNetwork::register);
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
@@ -47,12 +50,9 @@ public class LolMod
         ModItems.register(modEventBus);
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
-
+        ModAttachments.register(modEventBus);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-
-        modEventBus.addListener(this::setup);
-
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -67,9 +67,7 @@ public class LolMod
 
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
-    private void setup(final FMLCommonSetupEvent evt) {
-        CuriosApi.registerCurio(ModItems.RUBY_CRISTAL.get(), new RubyCrystal());
-    }
+
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
